@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧮 Calculadora Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+            min-width: 200px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            font-size: 1.4em;
+            font-weight: 600;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .result.success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            animation: slideIn 0.5s ease;
+        }
+
+        .result.error {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            animation: shake 0.5s ease;
+        }
+
+        .result.waiting {
+            background: #f0f0f0;
+            color: #999;
+            border: 2px dashed #ddd;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 20%, 40%, 60%, 80% {
+                transform: translateX(-5px);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(5px);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .history {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .history h3 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .history-item {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .clear-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            float: right;
+            margin-top: -5px;
+        }
+
+        .clear-btn:hover {
+            background: #ff5252;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .github-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .github-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .calculate-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧮 Calculadora</h1>
+        <p class="subtitle">Soma simples e rápida online</p>
+        
+        <form id="calculatorForm">
+            <div class="input-group">
+                <label for="numero1">📊 Primeiro Número:</label>
+                <input type="number" id="numero1" step="any" placeholder="Ex: 10.5" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="numero2">📊 Segundo Número:</label>
+                <input type="number" id="numero2" step="any" placeholder="Ex: 7.3" required>
+            </div>
+            
+            <button type="submit" class="calculate-btn">
+                ➕ Calcular Soma
+            </button>
+        </form>
+        
+        <div id="result" class="result waiting">
+            💡 Digite dois números e clique em "Calcular Soma"
+        </div>
+        
+        <div class="history" id="historySection" style="display: none;">
+            <h3>📝 Histórico de Cálculos 
+                <button class="clear-btn" onclick="clearHistory()">🗑️ Limpar</button>
+            </h3>
+            <div id="historyList"></div>
+        </div>
+        
+        <div class="footer">
+            <p>Feito com ❤️ e JavaScript | 
+            <a href="https://github.com" class="github-link" target="_blank">
+                📁 Ver no GitHub
+            </a></p>
+        </div>
+    </div>
+
+    <script>
+        // Array para armazenar o histórico
+        let history = JSON.parse(localStorage.getItem('calculatorHistory') || '[]');
+        
+        // Elementos do DOM
+        const form = document.getElementById('calculatorForm');
+        const numero1Input = document.getElementById('numero1');
+        const numero2Input = document.getElementById('numero2');
+        const resultDiv = document.getElementById('result');
+        const historySection = document.getElementById('historySection');
+        const historyList = document.getElementById('historyList');
+        
+        // Carrega o histórico ao iniciar
+        loadHistory();
+        
+        // Event listener para o formulário
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateSum();
+        });
+        
+        // Permite calcular com Enter
+        numero1Input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') numero2Input.focus();
+        });
+        
+        numero2Input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calculateSum();
+        });
+        
+        function calculateSum() {
+            const num1 = parseFloat(numero1Input.value);
+            const num2 = parseFloat(numero2Input.value);
+            
+            // Validação
+            if (isNaN(num1) || isNaN(num2)) {
+                showResult('❌ Por favor, digite números válidos!', 'error');
+                return;
+            }
+            
+            // Calcula a soma
+            const resultado = num1 + num2;
+            
+            // Formata o resultado
+            const calculation = `${num1} + ${num2} = ${resultado}`;
+            
+            // Mostra o resultado
+            showResult(`🎉 ${calculation}`, 'success');
+            
+            // Adiciona ao histórico
+            addToHistory(calculation);
+            
+            // Limpa os campos
+            setTimeout(() => {
+                numero1Input.value = '';
+                numero2Input.value = '';
+                numero1Input.focus();
+            }, 1000);
+        }
+        
+        function showResult(message, type) {
+            resultDiv.textContent = message;
+            resultDiv.className = `result ${type}`;
+        }
+        
+        function addToHistory(calculation) {
+            const timestamp = new Date().toLocaleString('pt-BR');
+            const historyItem = {
+                calculation: calculation,
+                timestamp: timestamp
+            };
+            
+            // Adiciona no início do array
+            history.unshift(historyItem);
+            
+            // Mantém apenas os últimos 10 cálculos
+            if (history.length > 10) {
+                history = history.slice(0, 10);
+            }
+            
+            // Salva no localStorage
+            localStorage.setItem('calculatorHistory', JSON.stringify(history));
+            
+            // Atualiza a visualização
+            loadHistory();
+        }
+        
+        function loadHistory() {
+            if (history.length === 0) {
+                historySection.style.display = 'none';
+                return;
+            }
+            
+            historySection.style.display = 'block';
+            historyList.innerHTML = '';
+            
+            history.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <strong>${item.calculation}</strong>
+                    <br>
+                    <small style="color: #666;">${item.timestamp}</small>
+                `;
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        function clearHistory() {
+            history = [];
+            localStorage.removeItem('calculatorHistory');
+            historySection.style.display = 'none';
+            showResult('🗑️ Histórico limpo!', 'success');
+            
+            setTimeout(() => {
+                showResult('💡 Digite dois números e clique em "Calcular Soma"', 'waiting');
+            }, 2000);
+        }
+        
+        // Foca no primeiro campo ao carregar
+        window.onload = function() {
+            numero1Input.focus();
+        };
+        
+        // Easter egg: Konami code
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→BA
+        
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.keyCode);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            
+            if (konamiCode.join(',') === konamiSequence.join(',')) {
+                showResult('🎮 Konami Code! Você é um verdadeiro gamer! 🎮', 'success');
+                document.body.style.background = 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3)';
+                document.body.style.backgroundSize = '400% 400%';
+                document.body.style.animation = 'rainbow 2s ease infinite';
+                
+                setTimeout(() => {
+                    document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    document.body.style.animation = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+    
+    <style>
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</body>
+</html>
